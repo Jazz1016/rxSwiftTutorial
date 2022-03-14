@@ -6,8 +6,8 @@
 //
 
 import UIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 struct Product {
     let imageName: String
@@ -52,12 +52,24 @@ class ViewController: UIViewController {
     
     func bindTableData() {
         //bind items to table
-        
+        viewModel.items.bind(
+            to: tableView.rx.items(
+                cellIdentifier: "cell",
+                cellType: UITableViewCell.self) ) {
+                    row, model, cell in
+                    cell.textLabel?.text = model.title
+                    cell.imageView?.image = UIImage(systemName: model.imageName)
+                }.disposed(by: bag)
         
         //bind model selected handler
+        tableView.rx.modelSelected(Product.self).bind {
+            (product) in
+            print(product.title)
+        }.disposed(by: bag)
         
         
         //fetch items
+        viewModel.fetchItems()
     }
 
 
